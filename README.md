@@ -73,7 +73,7 @@ Follow these steps to run the project locally.
     ```
 1.  **Clone the repository and navigate into the project directory.**
     ```bash
-    cd Tic_Tac_Toe_Game
+    git clone https://github.com/bikram73/Tic_Tac_Toe_Game.git
     ```
 
 2.  **Install dependencies**:

@@ -1,6 +1,5 @@
 import { BoardState, Move, Player, Difficulty } from "../models/GameTypes";
 import { WinChecker } from "./WinChecker";
-import { Board } from "./Board";
 
 export class AI {
     static getBestMove(

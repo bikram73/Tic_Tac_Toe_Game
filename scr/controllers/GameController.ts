@@ -1,4 +1,4 @@
-import { GameState, Player, GameMode, Difficulty } from "../models/GameTypes";
+import { GameState, GameMode, Difficulty } from "../models/GameTypes";
 import { Board } from "../engine/Board";
 import { WinChecker } from "../engine/WinChecker";
 import { AI } from "../engine/AI";
