@@ -1,0 +1,17 @@
+@layer utilities {
+  .glass-panel {
+    @apply bg-game-panel/80 backdrop-blur-lg border border-white/10 shadow-2xl rounded-2xl;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-2 bg-game-accent text-game-dark font-bold rounded-lg hover:bg-sky-300 transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-sky-500/20;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2 bg-slate-700 text-white font-semibold rounded-lg hover:bg-slate-600 transition-all;
+  }
+
+  .cell {
+    @apply relative flex items-center justify-center text-4xl font-black cursor-pointer transition-all duration-200 hover:bg-white/5 rounded-md;
+  }
+}

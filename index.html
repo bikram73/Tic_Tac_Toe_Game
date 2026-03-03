@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Tic-Tac-Toe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./style.css" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              game: {
+                dark: '#0f172a',
+                panel: '#1e293b',
+                accent: '#38bdf8',
+                x: '#ef4444',
+                o: '#22c55e'
+              }
+            },
+            animation: {
+              'pop-in': 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            },
+            keyframes: {
+              popIn: {
+                '0%': { transform: 'scale(0)', opacity: '0' },
+                '100%': { transform: 'scale(1)', opacity: '1' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-game-dark text-white font-sans antialiased min-h-screen flex flex-col items-center justify-center overflow-hidden">
+    <div id="app" class="w-full max-w-4xl p-4 flex flex-col items-center">
+      <!-- UI rendered by Renderer.ts -->
+    </div>
+    <script type="module" src="/scr/main.ts"></script>
+  </body>
+</html>
