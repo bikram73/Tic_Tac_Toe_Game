@@ -115,20 +115,24 @@ export class Renderer {
                 <div class="flex justify-between items-center w-full glass-panel p-4">
                     <button id="back-btn" class="text-slate-400 hover:text-white transition-colors">← Menu</button>
                     <div class="text-xl font-bold">
-                        <span class="${state.currentPlayer === 'X' ? 'text-game-x' : 'text-slate-500'}">X</span>
+                        <span class="text-red-500">X</span>
                         <span class="mx-2 text-slate-600">vs</span>
-                        <span class="${state.currentPlayer === 'O' ? 'text-game-o' : 'text-slate-500'}">O</span>
+                        <span class="text-green-500">O</span>
                     </div>
                     <button id="reset-btn" class="text-game-accent hover:text-sky-300 transition-colors">Reset ⟳</button>
                 </div>
+
+                <div id="turn-indicator" class="text-xl font-bold text-slate-300"></div>
 
                 <div id="game-board" class="glass-panel p-4 grid gap-2 mx-auto shadow-2xl relative" 
                      style="grid-template-columns: repeat(${state.boardSize}, minmax(0, 1fr)); aspect-ratio: 1/1; width: min(80vh, 100%);">
                     <!-- Cells injected here -->
                 </div>
 
-                <div class="text-slate-400 text-sm">
-                    Win Condition: <span class="text-white font-bold">${state.winLength}</span> in a row
+                <div class="flex flex-col items-center gap-2">
+                    <div class="text-slate-400 text-sm">
+                        Win Condition: <span class="text-white font-bold">${state.winLength}</span> in a row
+                    </div>
                 </div>
             </div>
 
@@ -191,6 +195,11 @@ export class Renderer {
 
         if (winningLine) {
             this.drawWinningLine(boardEl, winningLine, state.boardSize);
+        }
+
+        const turnEl = document.getElementById('turn-indicator');
+        if (turnEl) {
+            turnEl.innerHTML = `Current Turn: <span class="${state.currentPlayer === 'X' ? 'text-red-500' : 'text-green-500'}">${state.currentPlayer}</span>`;
         }
     }
 
