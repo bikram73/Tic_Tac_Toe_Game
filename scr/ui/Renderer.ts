@@ -25,6 +25,14 @@ export class Renderer {
             @keyframes drawLine {
                 to { stroke-dashoffset: 0; }
             }
+            .winning-cell {
+                animation: glow 1s ease-in-out infinite alternate;
+                background-color: rgba(59, 130, 246, 0.1) !important;
+            }
+            @keyframes glow {
+                from { box-shadow: 0 0 5px #3b82f6, inset 0 0 5px #3b82f6; }
+                to { box-shadow: 0 0 20px #3b82f6, inset 0 0 10px #3b82f6; }
+            }
         `;
         document.head.appendChild(style);
     }
@@ -155,10 +163,21 @@ export class Renderer {
         if (!boardEl) return;
 
         boardEl.innerHTML = '';
+
+        let winningLine: Move[] | null = null;
+        if (state.winner && state.winner !== 'Draw') {
+            winningLine = WinChecker.getWinningLine(state.board, state.winLength);
+        }
+
         state.board.forEach((row, r) => {
             row.forEach((cell, c) => {
                 const cellEl = document.createElement('div');
                 cellEl.className = `cell bg-white/5 border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors ${cell === 'X' ? 'text-game-x' : cell === 'O' ? 'text-game-o' : ''}`;
+                
+                if (winningLine && winningLine.some(m => m.row === r && m.col === c)) {
+                    cellEl.classList.add('winning-cell');
+                }
+
                 cellEl.textContent = cell;
                 cellEl.onclick = () => this.controller.handleMove(r, c);
                 
@@ -170,11 +189,8 @@ export class Renderer {
             });
         });
 
-        if (state.winner && state.winner !== 'Draw') {
-            const winningLine = WinChecker.getWinningLine(state.board, state.winLength);
-            if (winningLine) {
-                this.drawWinningLine(boardEl, winningLine, state.boardSize);
-            }
+        if (winningLine) {
+            this.drawWinningLine(boardEl, winningLine, state.boardSize);
         }
     }
 
