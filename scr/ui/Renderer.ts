@@ -31,8 +31,8 @@ export class Renderer {
                     <div>
                         <label class="block text-sm font-bold mb-2 text-slate-300">Game Mode</label>
                         <div class="flex gap-2">
-                            <button id="mode-pvp" class="flex-1 py-2 rounded bg-game-accent text-game-dark font-bold ring-2 ring-game-accent">PvP</button>
-                            <button id="mode-pvai" class="flex-1 py-2 rounded bg-slate-700 text-slate-300 font-bold hover:bg-slate-600">PvAI</button>
+                            <button type="button" id="mode-pvp" class="flex-1 py-2 rounded bg-game-accent text-game-dark font-bold ring-2 ring-game-accent transition-all">PvP</button>
+                            <button type="button" id="mode-pvai" class="flex-1 py-2 rounded bg-slate-700 text-slate-300 font-bold hover:bg-slate-600 transition-all">PvAI</button>
                         </div>
                     </div>
 
@@ -72,14 +72,14 @@ export class Renderer {
             }
         };
 
-        pvpBtn.onclick = () => updateModeUI('PvP');
-        pvaiBtn.onclick = () => updateModeUI('PvAI');
+        pvpBtn.addEventListener('click', () => updateModeUI('PvP'));
+        pvaiBtn.addEventListener('click', () => updateModeUI('PvAI'));
 
-        document.getElementById('start-btn')!.onclick = () => {
+        document.getElementById('start-btn')!.addEventListener('click', () => {
             const size = parseInt((document.getElementById('size-select') as HTMLSelectElement).value);
             const difficulty = (document.getElementById('difficulty-select') as HTMLSelectElement).value as any;
             this.controller.startGame(size, selectedMode, difficulty);
-        };
+        });
     }
 
     public renderGame(state: GameState) {
@@ -139,7 +139,7 @@ export class Renderer {
         state.board.forEach((row, r) => {
             row.forEach((cell, c) => {
                 const cellEl = document.createElement('div');
-                cellEl.className = `cell ${cell === 'X' ? 'text-game-x bg-white/5' : cell === 'O' ? 'text-game-o bg-white/5' : ''}`;
+                cellEl.className = `cell bg-white/5 border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors ${cell === 'X' ? 'text-game-x' : cell === 'O' ? 'text-game-o' : ''}`;
                 cellEl.textContent = cell;
                 cellEl.onclick = () => this.controller.handleMove(r, c);
                 
