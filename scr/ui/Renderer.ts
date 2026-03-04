@@ -1,5 +1,6 @@
 import { GameController } from "../controllers/GameController";
-import { GameState, Player } from "../models/GameTypes";
+import { GameState, Player, Move } from "../models/GameTypes";
+import { WinChecker } from "../engine/WinChecker";
 
 export class Renderer {
     private app: HTMLElement;
@@ -8,6 +9,24 @@ export class Renderer {
     constructor(controller: GameController) {
         this.app = document.getElementById('app')!;
         this.controller = controller;
+        this.injectStyles();
+    }
+
+    private injectStyles() {
+        if (document.getElementById('game-styles')) return;
+        const style = document.createElement('style');
+        style.id = 'game-styles';
+        style.textContent = `
+            .winning-line {
+                stroke-dasharray: 1;
+                stroke-dashoffset: 1;
+                animation: drawLine 0.5s ease-out forwards;
+            }
+            @keyframes drawLine {
+                to { stroke-dashoffset: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     public renderMenu() {
@@ -95,7 +114,7 @@ export class Renderer {
                     <button id="reset-btn" class="text-game-accent hover:text-sky-300 transition-colors">Reset ⟳</button>
                 </div>
 
-                <div id="game-board" class="glass-panel p-4 grid gap-2 mx-auto shadow-2xl" 
+                <div id="game-board" class="glass-panel p-4 grid gap-2 mx-auto shadow-2xl relative" 
                      style="grid-template-columns: repeat(${state.boardSize}, minmax(0, 1fr)); aspect-ratio: 1/1; width: min(80vh, 100%);">
                     <!-- Cells injected here -->
                 </div>
@@ -150,13 +169,40 @@ export class Renderer {
                 boardEl.appendChild(cellEl);
             });
         });
+
+        if (state.winner && state.winner !== 'Draw') {
+            const winningLine = WinChecker.getWinningLine(state.board, state.winLength);
+            if (winningLine) {
+                this.drawWinningLine(boardEl, winningLine, state.boardSize);
+            }
+        }
+    }
+
+    private drawWinningLine(boardEl: HTMLElement, line: Move[], boardSize: number) {
+        const start = line[0];
+        const end = line[line.length - 1];
+        const x1 = (start.col + 0.5) / boardSize * 100;
+        const y1 = (start.row + 0.5) / boardSize * 100;
+        const x2 = (end.col + 0.5) / boardSize * 100;
+        const y2 = (end.row + 0.5) / boardSize * 100;
+
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "absolute inset-0 w-full h-full pointer-events-none z-10");
+        svg.innerHTML = `
+            <line x1="${x1}%" y1="${y1}%" x2="${x2}%" y2="${y2}%" 
+                  stroke="#3b82f6" stroke-width="10" stroke-linecap="round"
+                  pathLength="1" class="winning-line" />
+        `;
+        boardEl.appendChild(svg);
     }
 
     public showResult(winner: Player | 'Draw') {
-        const modal = document.getElementById('result-modal')!;
-        const title = document.getElementById('result-title')!;
-        modal.classList.remove('hidden');
-        title.textContent = winner === 'Draw' ? "It's a Draw!" : `${winner} Wins!`;
-        title.className = `text-4xl font-black ${winner === 'X' ? 'text-game-x' : winner === 'O' ? 'text-game-o' : 'text-white'}`;
+        setTimeout(() => {
+            const modal = document.getElementById('result-modal')!;
+            const title = document.getElementById('result-title')!;
+            modal.classList.remove('hidden');
+            title.textContent = winner === 'Draw' ? "It's a Draw!" : `${winner} Wins!`;
+            title.className = `text-4xl font-black ${winner === 'X' ? 'text-game-x' : winner === 'O' ? 'text-game-o' : 'text-white'}`;
+        }, 800);
     }
 }
