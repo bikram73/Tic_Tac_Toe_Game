@@ -15,3 +15,13 @@
     @apply relative flex items-center justify-center text-4xl font-black cursor-pointer transition-all duration-200 hover:bg-white/5 rounded-md;
   }
 }
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.animate-pop {
+  animation: pop 0.3s ease-in-out;
+}

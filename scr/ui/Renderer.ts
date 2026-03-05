@@ -200,6 +200,10 @@ export class Renderer {
         const turnEl = document.getElementById('turn-indicator');
         if (turnEl) {
             turnEl.innerHTML = `Current Turn: <span class="${state.currentPlayer === 'X' ? 'text-red-500' : 'text-green-500'}">${state.currentPlayer}</span>`;
+
+            turnEl.classList.remove('animate-pop');
+            void turnEl.offsetWidth; // Trigger reflow
+            turnEl.classList.add('animate-pop');
         }
     }
 
