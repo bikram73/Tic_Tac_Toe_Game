@@ -5,6 +5,8 @@ import { WinChecker } from "../engine/WinChecker";
 export class Renderer {
     private app: HTMLElement;
     private controller: GameController;
+    private lastPlayer: Player | null = null;
+    private audioContext: AudioContext | null = null;
 
     constructor(controller: GameController) {
         this.app = document.getElementById('app')!;
@@ -204,6 +206,77 @@ export class Renderer {
             turnEl.classList.remove('animate-pop');
             void turnEl.offsetWidth; // Trigger reflow
             turnEl.classList.add('animate-pop');
+
+            if (this.lastPlayer && this.lastPlayer !== state.currentPlayer) {
+                this.playTurnSound();
+            }
+            this.lastPlayer = state.currentPlayer;
+        }
+    }
+
+    private playTurnSound() {
+        try {
+            if (!this.audioContext) {
+                this.audioContext = new AudioContext();
+            }
+            
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+
+            const osc = this.audioContext.createOscillator();
+            const gain = this.audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(this.audioContext.destination);
+
+            // Create a pleasant "pop" sound
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, this.audioContext.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, this.audioContext.currentTime + 0.1);
+
+            gain.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+
+            osc.start();
+            osc.stop(this.audioContext.currentTime + 0.1);
+        } catch (e) {
+            console.error("Audio play failed", e);
+        }
+    }
+
+    private playWinSound() {
+        try {
+            if (!this.audioContext) {
+                this.audioContext = new AudioContext();
+            }
+            
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+
+            const now = this.audioContext.currentTime;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C Major arpeggio
+
+            notes.forEach((freq, i) => {
+                const osc = this.audioContext!.createOscillator();
+                const gain = this.audioContext!.createGain();
+
+                osc.connect(gain);
+                gain.connect(this.audioContext!.destination);
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + i * 0.1);
+
+                gain.gain.setValueAtTime(0, now + i * 0.1);
+                gain.gain.linearRampToValueAtTime(0.1, now + i * 0.1 + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.3);
+
+                osc.start(now + i * 0.1);
+                osc.stop(now + i * 0.1 + 0.3);
+            });
+        } catch (e) {
+            console.error("Audio play failed", e);
         }
     }
 
@@ -226,6 +299,9 @@ export class Renderer {
     }
 
     public showResult(winner: Player | 'Draw') {
+        if (winner !== 'Draw') {
+            this.playWinSound();
+        }
         setTimeout(() => {
             const modal = document.getElementById('result-modal')!;
             const title = document.getElementById('result-title')!;
