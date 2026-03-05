@@ -280,6 +280,41 @@ export class Renderer {
         }
     }
 
+    private playDrawSound() {
+        try {
+            if (!this.audioContext) {
+                this.audioContext = new AudioContext();
+            }
+            
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+
+            const now = this.audioContext.currentTime;
+            const notes = [400, 300]; // Descending tone for draw
+
+            notes.forEach((freq, i) => {
+                const osc = this.audioContext!.createOscillator();
+                const gain = this.audioContext!.createGain();
+
+                osc.connect(gain);
+                gain.connect(this.audioContext!.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + i * 0.2);
+
+                gain.gain.setValueAtTime(0, now + i * 0.2);
+                gain.gain.linearRampToValueAtTime(0.1, now + i * 0.2 + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.2 + 0.4);
+
+                osc.start(now + i * 0.2);
+                osc.stop(now + i * 0.2 + 0.4);
+            });
+        } catch (e) {
+            console.error("Audio play failed", e);
+        }
+    }
+
     private drawWinningLine(boardEl: HTMLElement, line: Move[], boardSize: number) {
         const start = line[0];
         const end = line[line.length - 1];
@@ -301,6 +336,8 @@ export class Renderer {
     public showResult(winner: Player | 'Draw') {
         if (winner !== 'Draw') {
             this.playWinSound();
+        } else {
+            this.playDrawSound();
         }
         setTimeout(() => {
             const modal = document.getElementById('result-modal')!;
