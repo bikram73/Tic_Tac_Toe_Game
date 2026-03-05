@@ -7,6 +7,7 @@ export class Renderer {
     private controller: GameController;
     private lastPlayer: Player | null = null;
     private audioContext: AudioContext | null = null;
+    private isMuted: boolean = false;
 
     constructor(controller: GameController) {
         this.app = document.getElementById('app')!;
@@ -121,7 +122,12 @@ export class Renderer {
                         <span class="mx-2 text-slate-600">vs</span>
                         <span class="text-green-500">O</span>
                     </div>
-                    <button id="reset-btn" class="text-game-accent hover:text-sky-300 transition-colors">Reset ⟳</button>
+                    <div class="flex gap-3 items-center">
+                        <button id="mute-btn" class="text-slate-400 hover:text-white transition-colors text-xl" title="Toggle Sound">
+                            ${this.isMuted ? '🔇' : '🔊'}
+                        </button>
+                        <button id="reset-btn" class="text-game-accent hover:text-sky-300 transition-colors">Reset ⟳</button>
+                    </div>
                 </div>
 
                 <div id="turn-indicator" class="text-xl font-bold text-slate-300"></div>
@@ -154,6 +160,11 @@ export class Renderer {
 
         document.getElementById('back-btn')!.onclick = () => this.controller.returnToMenu();
         document.getElementById('reset-btn')!.onclick = () => this.controller.resetGame();
+        document.getElementById('mute-btn')!.onclick = () => {
+            this.isMuted = !this.isMuted;
+            const btn = document.getElementById('mute-btn');
+            if (btn) btn.textContent = this.isMuted ? '🔇' : '🔊';
+        };
         document.getElementById('modal-reset')!.onclick = () => {
             document.getElementById('result-modal')!.classList.add('hidden');
             this.controller.resetGame();
@@ -215,6 +226,7 @@ export class Renderer {
     }
 
     private playTurnSound() {
+        if (this.isMuted) return;
         try {
             if (!this.audioContext) {
                 this.audioContext = new AudioContext();
@@ -246,6 +258,7 @@ export class Renderer {
     }
 
     private playWinSound() {
+        if (this.isMuted) return;
         try {
             if (!this.audioContext) {
                 this.audioContext = new AudioContext();
@@ -281,6 +294,7 @@ export class Renderer {
     }
 
     private playDrawSound() {
+        if (this.isMuted) return;
         try {
             if (!this.audioContext) {
                 this.audioContext = new AudioContext();
